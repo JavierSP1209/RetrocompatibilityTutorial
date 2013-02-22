@@ -1,6 +1,5 @@
 package com.androidtitlan.retrocompatibilitytutorial;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,9 +7,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.util.SparseArray;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -19,7 +20,7 @@ import com.actionbarsherlock.view.MenuItem;
 /**
  * Main activity for retrocompatibility on action bar and view pager tutorial
  * 
- * @author M. en C. Javier Silva Pérez - [javier]
+ * @author M. en C. Javier Silva Perez - [javier]
  * @since 22/02/2013
  * @version 1.0
  */
@@ -36,16 +37,13 @@ public class InitialActivity extends SherlockFragmentActivity implements
 	 */
 	AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 
-	private SparseArray<String> TITLES;
-	private static final Integer OPTIONS_FRAGMENT = 0;
-	private static final Integer COLLECTION_FRAGMENT = 1;
-	private static final Integer OTHER_FRAGMENT = 2;
+	private String[] sections;
 
 	public static final String TAG = "COMPATIBILITY_TUTORIAL";
 
 	/**
 	 * The {@link ViewPager} that will display the primary sections of the app,
-	 * one at a time.
+	 * one at a time. Using this we could use swipe for change between tabs
 	 */
 	ViewPager mViewPager;
 
@@ -55,16 +53,16 @@ public class InitialActivity extends SherlockFragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_initial);
 
-		fillSubtitlesArray();
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
 		mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(
 				getSupportFragmentManager());
 
+		sections = getResources().getStringArray(R.array.sections);
 		// Set up the action bar.
 		final ActionBar ab = getSupportActionBar();
 		// ab.setDisplayHomeAsUpEnabled(Boolean.TRUE);
-		ab.setSubtitle(TITLES.get(OPTIONS_FRAGMENT));
+		ab.setSubtitle(sections[0]);
 		ab.setDisplayShowTitleEnabled(true);
 
 		// Set up the ViewPager, attaching the adapter and setting up a listener
@@ -80,17 +78,31 @@ public class InitialActivity extends SherlockFragmentActivity implements
 						// We can also use ActionBar.Tab#select() to do this if
 						// we have a reference to the
 						// Tab.
-						ab.setSubtitle(TITLES.get(position));
+						ab.setSubtitle(sections[position]);
 						ab.setSelectedNavigationItem(position);
 					}
 				});
 
-		ab.addTab(ab.newTab().setText(R.string.subtitle_options)
+		// Add tabs to view
+		ab.addTab(ab.newTab().setText(sections[0])
 				.setIcon(R.drawable.ic_menu_options).setTabListener(this));
-		ab.addTab(ab.newTab().setText(R.string.subtitle_collection)
+		ab.addTab(ab.newTab().setText(sections[1])
 				.setIcon(R.drawable.ic_menu_collection).setTabListener(this));
-		ab.addTab(ab.newTab().setText(R.string.subtitle_other)
-				.setIcon(R.drawable.ic_menu_other).setTabListener(this));
+		ab.addTab(ab.newTab().setText("").setIcon(R.drawable.ic_menu_other)
+				.setTabListener(this));
+
+		// set up list navigation
+		ab.setListNavigationCallbacks(ArrayAdapter.createFromResource(this,
+				R.array.sections, R.layout.sherlock_spinner_dropdown_item),
+				new OnNavigationListener() {
+					public boolean onNavigationItemSelected(int itemPosition,
+							long itemId) {
+						// When an option is selected, update view pager
+						// position
+						mViewPager.setCurrentItem(itemPosition);
+						return false;
+					}
+				});
 
 		// default to tab navigation
 		showTabsNav();
@@ -99,43 +111,46 @@ public class InitialActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent;
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// TODO handle clicking the app icon/logo
+			//This is called when home button is pressed
+			Toast.makeText(this, "Home Button", Toast.LENGTH_LONG).show();
 			return false;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	private void showTabsNav() {
+	/**
+	 * Change navigation type to tabs
+	 */
+	public void showTabsNav() {
 		ActionBar ab = getSupportActionBar();
 		if (ab.getNavigationMode() != ActionBar.NAVIGATION_MODE_TABS) {
+			ab.setDisplayShowTitleEnabled(true);
+			ab.setSubtitle(sections[0]);
+			ab.setTitle(getString(R.string.app_name));
 			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		}
 	}
 
 	/**
-	 * Fills the subtitle array with the resource strings, so it would be
-	 * multilanguage
+	 * Change navigation type to list
 	 */
-	private void fillSubtitlesArray() {
-		TITLES = new SparseArray<String>();
-		TITLES.put(OPTIONS_FRAGMENT,
-				getResources().getString(R.string.subtitle_options));
-		TITLES.put(COLLECTION_FRAGMENT,
-				getResources().getString(R.string.subtitle_collection));
-		TITLES.put(OTHER_FRAGMENT,
-				getResources().getString(R.string.subtitle_other));
-
+	public void showDropDownNav() {
+		ActionBar ab = getSupportActionBar();
+		if (ab.getNavigationMode() != ActionBar.NAVIGATION_MODE_LIST) {
+			ab.setDisplayShowTitleEnabled(false);
+			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// getSupportMenuInflater().inflate(R.menu.main_menu, menu);
+		getSupportMenuInflater().inflate(R.menu.main_menu, menu);
 
 		return super.onCreateOptionsMenu(menu);
+
 	}
 
 	/*
@@ -193,26 +208,25 @@ public class InitialActivity extends SherlockFragmentActivity implements
 		public Fragment getItem(int i) {
 			switch (i) {
 			case 0:
-				// Fragment of the app is the Key Management.
+				// Fragment for Option tab
 				return new OptionsFragment();
 			case 1:
-				// Fragment of the app is the Certificate Management.
-				return new OptionsFragment();
+				// Fragment for collection tab
+				return new CollectionFragment();
 
 			case 2:
-				// Fragment of the app is the Trust Network Management.
-				return new OptionsFragment();
-
-			
+				// Fragment for dummy
+				return new DummyFragment();
 
 			default:
-				return new OptionsFragment();
+				return new DummyFragment();
 			}
 		}
 
 		@Override
 		public int getCount() {
-			return 4;
+			return 3;
 		}
 	}
+
 }
