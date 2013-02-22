@@ -1,11 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">RetrocompatibilityTutorial</string>
+    <string name="app_name">Retrocompatibility Tutorial</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_initial">InitialActivity</string>
-    <string name="subtitle_options">Options</string>
-    <string name="subtitle_collection">Collection</string>
-    <string name="subtitle_other">Other</string>
+    <string name="up">Up</string>
+    <string name="dummySectionText">Dummy Section</string>
+    <string name="menuOption1">Option 1</string>
+    <string name="menuOption2">Option 2</string>
+    <string name="menuOption3">Option 3</string>
+    <string name="menuOption4">SubMenu</string>
+    <string name="menuSub1">Sub 1</string>
+    <string name="menuSub2">Sub 2</string>
+    <string name="menuSub3">Sub 3</string>
+    <string name="title_activity_collection_fragment">CollectionFragment</string>
+    <string name="btnCollection">Show Collection</string>
 
 </resources>
