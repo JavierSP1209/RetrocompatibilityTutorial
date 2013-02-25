@@ -8,7 +8,6 @@
 package com.androidtitlan.retrocompatibilitytutorial;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ public class DummyFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_section_dummy,
 				container, false);
-		Bundle args = getArguments();
 		((TextView) rootView.findViewById(android.R.id.text1))
 				.setText(getString(R.string.dummySectionText));
 		return rootView;
